@@ -20,6 +20,19 @@ const Index = () => {
     }
   };
 
+  const handleDeletePackage = async (packageId: string) => {
+    try {
+      // Here we would integrate with Go High Level API
+      // await deleteGoHighLevelProduct(packageId);
+      
+      setPackages(packages.filter((pkg) => pkg.id !== packageId));
+      toast.success("Package deleted successfully!");
+    } catch (error) {
+      toast.error("Failed to delete package");
+      console.error("Error deleting package:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-6 md:p-8">
       <div className="max-w-6xl mx-auto space-y-8">
@@ -34,7 +47,7 @@ const Index = () => {
 
         <div className="grid gap-8 md:grid-cols-[400px,1fr]">
           <PackageForm onSubmit={handleCreatePackage} />
-          <PackageTable packages={packages} />
+          <PackageTable packages={packages} onDelete={handleDeletePackage} />
         </div>
       </div>
     </div>
