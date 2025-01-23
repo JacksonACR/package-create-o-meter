@@ -5,13 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   RadioGroup,
   RadioGroupItem,
 } from "@/components/ui/radio-group";
@@ -27,7 +20,7 @@ export const PackageForm = ({ onSubmit }: PackageFormProps) => {
     durationType: "weeks" as const,
     sessionsPerWeek: "",
     price: "",
-    paymentType: "one-time" as const,
+    paymentType: "one-time" as "one-time" | "recurring",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
