@@ -36,6 +36,13 @@ export const PackageTable = ({ packages, onDelete }: PackageTableProps) => {
     );
   }
 
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(price);
+  };
+
   return (
     <Card className="overflow-hidden hover-scale">
       <Table>
@@ -44,6 +51,8 @@ export const PackageTable = ({ packages, onDelete }: PackageTableProps) => {
             <TableHead>Package Name</TableHead>
             <TableHead>Duration</TableHead>
             <TableHead>Sessions/Week</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Payment Type</TableHead>
             <TableHead>Created</TableHead>
             <TableHead className="w-[100px]">Actions</TableHead>
           </TableRow>
@@ -52,10 +61,10 @@ export const PackageTable = ({ packages, onDelete }: PackageTableProps) => {
           {packages.map((pkg) => (
             <TableRow key={pkg.id} className="hover:bg-muted/50">
               <TableCell className="font-medium">{pkg.name}</TableCell>
-              <TableCell>
-                {pkg.duration} {pkg.durationType}
-              </TableCell>
+              <TableCell>{pkg.duration} weeks</TableCell>
               <TableCell>{pkg.sessionsPerWeek}</TableCell>
+              <TableCell>{formatPrice(pkg.price)}</TableCell>
+              <TableCell className="capitalize">{pkg.paymentType}</TableCell>
               <TableCell>
                 {new Date(pkg.createdAt).toLocaleDateString()}
               </TableCell>

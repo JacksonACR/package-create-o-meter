@@ -11,6 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@/components/ui/radio-group";
 
 interface PackageFormProps {
   onSubmit: (pkg: Package) => void;
@@ -20,8 +24,10 @@ export const PackageForm = ({ onSubmit }: PackageFormProps) => {
   const [formData, setFormData] = useState({
     name: "",
     duration: "",
-    durationType: "weeks",
+    durationType: "weeks" as const,
     sessionsPerWeek: "",
+    price: "",
+    paymentType: "one-time" as const,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -31,8 +37,10 @@ export const PackageForm = ({ onSubmit }: PackageFormProps) => {
       id: crypto.randomUUID(),
       name: formData.name,
       duration: Number(formData.duration),
-      durationType: formData.durationType as "weeks" | "months",
+      durationType: formData.durationType,
       sessionsPerWeek: Number(formData.sessionsPerWeek),
+      price: Number(formData.price),
+      paymentType: formData.paymentType,
       createdAt: new Date().toISOString(),
     };
 
@@ -42,6 +50,8 @@ export const PackageForm = ({ onSubmit }: PackageFormProps) => {
       duration: "",
       durationType: "weeks",
       sessionsPerWeek: "",
+      price: "",
+      paymentType: "one-time",
     });
   };
 
@@ -63,7 +73,7 @@ export const PackageForm = ({ onSubmit }: PackageFormProps) => {
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="duration">Duration</Label>
+            <Label htmlFor="duration">Duration (weeks)</Label>
             <Input
               id="duration"
               type="number"
@@ -78,38 +88,56 @@ export const PackageForm = ({ onSubmit }: PackageFormProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="durationType">Period</Label>
-            <Select
-              value={formData.durationType}
-              onValueChange={(value) =>
-                setFormData({ ...formData, durationType: value })
+            <Label htmlFor="sessionsPerWeek">Sessions per Week</Label>
+            <Input
+              id="sessionsPerWeek"
+              type="number"
+              min="1"
+              max="7"
+              placeholder="e.g., 3"
+              value={formData.sessionsPerWeek}
+              onChange={(e) =>
+                setFormData({ ...formData, sessionsPerWeek: e.target.value })
               }
-            >
-              <SelectTrigger id="durationType">
-                <SelectValue placeholder="Select period" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="weeks">Weeks</SelectItem>
-                <SelectItem value="months">Months</SelectItem>
-              </SelectContent>
-            </Select>
+              required
+            />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="sessionsPerWeek">Sessions per Week</Label>
+          <Label htmlFor="price">Price</Label>
           <Input
-            id="sessionsPerWeek"
+            id="price"
             type="number"
-            min="1"
-            max="7"
-            placeholder="e.g., 3"
-            value={formData.sessionsPerWeek}
+            min="0"
+            step="0.01"
+            placeholder="e.g., 299.99"
+            value={formData.price}
             onChange={(e) =>
-              setFormData({ ...formData, sessionsPerWeek: e.target.value })
+              setFormData({ ...formData, price: e.target.value })
             }
             required
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Payment Type</Label>
+          <RadioGroup
+            value={formData.paymentType}
+            onValueChange={(value: "one-time" | "recurring") =>
+              setFormData({ ...formData, paymentType: value })
+            }
+            className="flex gap-4"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="one-time" id="one-time" />
+              <Label htmlFor="one-time">One-time Payment</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="recurring" id="recurring" />
+              <Label htmlFor="recurring">Recurring Payment</Label>
+            </div>
+          </RadioGroup>
         </div>
 
         <Button type="submit" className="w-full">
