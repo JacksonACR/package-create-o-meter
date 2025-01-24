@@ -12,14 +12,16 @@ interface PackageFormProps {
 }
 
 export const PackageForm = ({ onSubmit, editPackage, onCancel }: PackageFormProps) => {
-  const [formData, setFormData] = useState({
+  const initialFormState = {
     name: "",
     duration: "",
     durationType: "weeks" as const,
     sessionsPerWeek: "",
     price: "",
     paymentType: "one-time" as "one-time" | "recurring",
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
 
   useEffect(() => {
     if (editPackage) {
@@ -61,15 +63,12 @@ export const PackageForm = ({ onSubmit, editPackage, onCancel }: PackageFormProp
     };
 
     onSubmit(packageData);
+    
+    // Clear form after successful submission
     if (!editPackage) {
-      setFormData({
-        name: "",
-        duration: "",
-        durationType: "weeks",
-        sessionsPerWeek: "",
-        price: "",
-        paymentType: "one-time",
-      });
+      setFormData(initialFormState);
+    } else {
+      onCancel?.();
     }
   };
 
