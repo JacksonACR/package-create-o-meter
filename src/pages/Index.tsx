@@ -6,17 +6,26 @@ import { toast } from "sonner";
 
 const Index = () => {
   const [packages, setPackages] = useState<Package[]>([]);
+  const [editingPackage, setEditingPackage] = useState<Package | null>(null);
 
   const handleCreatePackage = async (newPackage: Package) => {
     try {
       // Here we would integrate with Go High Level API
       // const response = await createGoHighLevelProduct(newPackage);
       
-      setPackages([...packages, newPackage]);
-      toast.success("Package created successfully!");
+      if (editingPackage) {
+        setPackages(packages.map(pkg => 
+          pkg.id === newPackage.id ? newPackage : pkg
+        ));
+        setEditingPackage(null);
+        toast.success("Package updated successfully!");
+      } else {
+        setPackages([...packages, newPackage]);
+        toast.success("Package created successfully!");
+      }
     } catch (error) {
-      toast.error("Failed to create package");
-      console.error("Error creating package:", error);
+      toast.error(editingPackage ? "Failed to update package" : "Failed to create package");
+      console.error("Error with package:", error);
     }
   };
 
@@ -33,6 +42,10 @@ const Index = () => {
     }
   };
 
+  const handleEditPackage = (pkg: Package) => {
+    setEditingPackage(pkg);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-6 md:p-8">
       <div className="max-w-6xl mx-auto space-y-8">
@@ -46,8 +59,16 @@ const Index = () => {
         </header>
 
         <div className="grid gap-8 md:grid-cols-[400px,1fr]">
-          <PackageForm onSubmit={handleCreatePackage} />
-          <PackageTable packages={packages} onDelete={handleDeletePackage} />
+          <PackageForm 
+            onSubmit={handleCreatePackage} 
+            editPackage={editingPackage}
+            onCancel={() => setEditingPackage(null)}
+          />
+          <PackageTable 
+            packages={packages} 
+            onDelete={handleDeletePackage}
+            onEdit={handleEditPackage}
+          />
         </div>
       </div>
     </div>

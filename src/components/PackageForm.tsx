@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Package } from "@/types/package";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import {
   RadioGroup,
   RadioGroupItem,
@@ -11,9 +12,11 @@ import {
 
 interface PackageFormProps {
   onSubmit: (pkg: Package) => void;
+  editPackage?: Package | null;
+  onCancel?: () => void;
 }
 
-export const PackageForm = ({ onSubmit }: PackageFormProps) => {
+export const PackageForm = ({ onSubmit, editPackage, onCancel }: PackageFormProps) => {
   const [formData, setFormData] = useState({
     name: "",
     duration: "",
@@ -23,29 +26,56 @@ export const PackageForm = ({ onSubmit }: PackageFormProps) => {
     paymentType: "one-time" as "one-time" | "recurring",
   });
 
+  useEffect(() => {
+    if (editPackage) {
+      setFormData({
+        name: editPackage.name,
+        duration: editPackage.duration.toString(),
+        durationType: editPackage.durationType,
+        sessionsPerWeek: editPackage.sessionsPerWeek.toString(),
+        price: editPackage.price.toString(),
+        paymentType: editPackage.paymentType,
+      });
+    }
+  }, [editPackage]);
+
+  const validateName = (name: string) => {
+    if (name.includes('-')) {
+      toast.error("Package name cannot contain hyphens (-)");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const newPackage: Package = {
-      id: crypto.randomUUID(),
+    if (!validateName(formData.name)) {
+      return;
+    }
+
+    const packageData: Package = {
+      id: editPackage?.id || crypto.randomUUID(),
       name: formData.name,
       duration: Number(formData.duration),
       durationType: formData.durationType,
       sessionsPerWeek: Number(formData.sessionsPerWeek),
       price: Number(formData.price),
       paymentType: formData.paymentType,
-      createdAt: new Date().toISOString(),
+      createdAt: editPackage?.createdAt || new Date().toISOString(),
     };
 
-    onSubmit(newPackage);
-    setFormData({
-      name: "",
-      duration: "",
-      durationType: "weeks",
-      sessionsPerWeek: "",
-      price: "",
-      paymentType: "one-time",
-    });
+    onSubmit(packageData);
+    if (!editPackage) {
+      setFormData({
+        name: "",
+        duration: "",
+        durationType: "weeks",
+        sessionsPerWeek: "",
+        price: "",
+        paymentType: "one-time",
+      });
+    }
   };
 
   return (
@@ -57,9 +87,10 @@ export const PackageForm = ({ onSubmit }: PackageFormProps) => {
             id="name"
             placeholder="e.g., Premium Training Package"
             value={formData.name}
-            onChange={(e) =>
-              setFormData({ ...formData, name: e.target.value })
-            }
+            onChange={(e) => {
+              const value = e.target.value;
+              setFormData({ ...formData, name: value });
+            }}
             required
           />
         </div>
@@ -133,9 +164,16 @@ export const PackageForm = ({ onSubmit }: PackageFormProps) => {
           </RadioGroup>
         </div>
 
-        <Button type="submit" className="w-full">
-          Create Package
-        </Button>
+        <div className="flex gap-4">
+          <Button type="submit" className="flex-1">
+            {editPackage ? "Update" : "Create"} Package
+          </Button>
+          {editPackage && (
+            <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
+              Cancel
+            </Button>
+          )}
+        </div>
       </form>
     </Card>
   );
