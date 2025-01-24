@@ -63,13 +63,16 @@ export const PackageForm = ({ onSubmit, editPackage, onCancel }: PackageFormProp
     };
 
     onSubmit(packageData);
+    setFormData(initialFormState); // Clear form after successful submission
     
-    // Clear form after successful submission
-    if (!editPackage) {
-      setFormData(initialFormState);
-    } else {
-      onCancel?.();
+    if (editPackage) {
+      onCancel?.(); // Call onCancel after update to close the form
     }
+  };
+
+  const handleCancel = () => {
+    setFormData(initialFormState); // Clear form when canceling
+    onCancel?.();
   };
 
   const handleFieldChange = (field: string, value: string | "one-time" | "recurring") => {
@@ -86,7 +89,12 @@ export const PackageForm = ({ onSubmit, editPackage, onCancel }: PackageFormProp
             {editPackage ? "Update" : "Create"} Package
           </Button>
           {editPackage && (
-            <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={handleCancel} 
+              className="flex-1"
+            >
               Cancel
             </Button>
           )}
