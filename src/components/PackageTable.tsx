@@ -68,7 +68,7 @@ export const PackageTable = ({ packages, onDelete, onEdit }: PackageTableProps) 
       if (
         i === 1 ||
         i === totalPages ||
-        (i >= currentPage - 2 && i <= currentPage + 2)
+        (i >= currentPage - 1 && i <= currentPage + 1)
       ) {
         items.push(
           <PaginationItem key={i}>
@@ -81,8 +81,8 @@ export const PackageTable = ({ packages, onDelete, onEdit }: PackageTableProps) 
           </PaginationItem>
         );
       } else if (
-        i === currentPage - 3 ||
-        i === currentPage + 3
+        i === currentPage - 2 ||
+        i === currentPage + 2
       ) {
         items.push(
           <PaginationItem key={i}>
@@ -97,79 +97,86 @@ export const PackageTable = ({ packages, onDelete, onEdit }: PackageTableProps) 
   return (
     <div className="space-y-4">
       <Card className="overflow-hidden hover-scale">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Package Name</TableHead>
-              <TableHead>Duration</TableHead>
-              <TableHead>Sessions/Week</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Payment Type</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead className="w-[140px]">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentPackages.map((pkg) => (
-              <TableRow key={pkg.id} className="hover:bg-muted/50">
-                <TableCell className="font-medium">{pkg.name}</TableCell>
-                <TableCell>{pkg.duration} weeks</TableCell>
-                <TableCell>{pkg.sessionsPerWeek}</TableCell>
-                <TableCell>{formatPrice(pkg.price)}</TableCell>
-                <TableCell className="capitalize">{pkg.paymentType}</TableCell>
-                <TableCell>
-                  {new Date(pkg.createdAt).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onEdit(pkg)}
-                      className="hover:bg-primary/10 hover:text-primary"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="hover:bg-destructive/10 hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Package</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete "{pkg.name}"? This action
-                            cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => onDelete(pkg.id)}
-                            className="bg-destructive hover:bg-destructive/90"
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </TableCell>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Package Name</TableHead>
+                <TableHead className="hidden sm:table-cell">Duration</TableHead>
+                <TableHead className="hidden sm:table-cell">Sessions/Week</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead className="hidden md:table-cell">Payment Type</TableHead>
+                <TableHead className="hidden lg:table-cell">Created</TableHead>
+                <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {currentPackages.map((pkg) => (
+                <TableRow key={pkg.id} className="hover:bg-muted/50">
+                  <TableCell className="font-medium">
+                    {pkg.name}
+                    <div className="sm:hidden text-sm text-muted-foreground">
+                      {pkg.duration} weeks • {pkg.sessionsPerWeek} sessions/week
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell">{pkg.duration} weeks</TableCell>
+                  <TableCell className="hidden sm:table-cell">{pkg.sessionsPerWeek}</TableCell>
+                  <TableCell>{formatPrice(pkg.price)}</TableCell>
+                  <TableCell className="hidden md:table-cell capitalize">{pkg.paymentType}</TableCell>
+                  <TableCell className="hidden lg:table-cell">
+                    {new Date(pkg.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onEdit(pkg)}
+                        className="hover:bg-primary/10 hover:text-primary"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="hover:bg-destructive/10 hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Package</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete "{pkg.name}"? This action
+                              cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => onDelete(pkg.id)}
+                              className="bg-destructive hover:bg-destructive/90"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </Card>
 
       {totalPages > 1 && (
         <Pagination>
-          <PaginationContent>
+          <PaginationContent className="flex-wrap justify-center">
             <PaginationItem>
               <PaginationPrevious
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}

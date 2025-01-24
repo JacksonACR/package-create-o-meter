@@ -47,10 +47,10 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-6 md:p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-4 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-8">
         <header className="text-center mb-12 fade-in">
-          <h1 className="text-4xl font-bold tracking-tight mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
             PT Package Management
           </h1>
           <p className="text-muted-foreground">
@@ -59,11 +59,13 @@ const Index = () => {
         </header>
 
         <div className="grid gap-8 md:grid-cols-[400px,1fr]">
-          <PackageForm 
-            onSubmit={handleCreatePackage} 
-            editPackage={editingPackage}
-            onCancel={() => setEditingPackage(null)}
-          />
+          <div className="w-full">
+            <PackageForm 
+              onSubmit={handleCreatePackage} 
+              editPackage={editingPackage}
+              onCancel={() => setEditingPackage(null)}
+            />
+          </div>
           <PackageTable 
             packages={packages} 
             onDelete={handleDeletePackage}
